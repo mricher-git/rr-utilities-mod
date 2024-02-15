@@ -38,12 +38,6 @@ public static class Loader
 		ModEntry.OnGUI = OnGUI;
 		ModEntry.OnSaveGUI = Settings.Save;
 
-		var go = new GameObject("[UtilitiesMod]");
-		Instance = go.AddComponent<UtilitiesMod>();
-		UnityEngine.Object.DontDestroyOnLoad(go);
-		Instance.Settings = Settings;
-
-
 		HarmonyInstance = new Harmony(modEntry.Info.Id);
 		//Harmony.DEBUG = true;
 		return true;
@@ -55,6 +49,10 @@ public static class Loader
 		{
 			try
 			{
+				var go = new GameObject("[UtilitiesMod]");
+				Instance = go.AddComponent<UtilitiesMod>();
+				UnityEngine.Object.DontDestroyOnLoad(go);
+				Instance.Settings = Settings;
 				HarmonyInstance.PatchAll(Assembly.GetExecutingAssembly());
 			}
 			catch (Exception ex)
@@ -67,6 +65,8 @@ public static class Loader
 		else
 		{
 			HarmonyInstance.UnpatchAll(modEntry.Info.Id);
+			if (Instance != null) UnityEngine.Object.DestroyImmediate(Instance.gameObject);
+			Instance = null;
 		}
 
 		return true;
@@ -74,7 +74,6 @@ public static class Loader
 
 	private static bool Unload(UnityModManager.ModEntry modEntry)
 	{
-		if (Instance != null) UnityEngine.Object.DestroyImmediate(Instance.gameObject);
 		return true;
 	}
 
@@ -175,5 +174,17 @@ public static class Loader
 		{
 			Instance.OnSettingsChanged();
 		}
+	}
+
+	public static void Log(string str)
+	{
+		ModEntry?.Logger.Log(str);
+	}
+
+	public static void LogDebug(string str)
+	{
+#if DEBUG
+		ModEntry?.Logger.Log(str);
+#endif
 	}
 }

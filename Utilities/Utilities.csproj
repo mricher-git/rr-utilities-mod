@@ -7,31 +7,36 @@
 		<WarningsAsErrors>CS8600;CS8602;CS8603</WarningsAsErrors>
 	</PropertyGroup>
 
+	<!-- Krafs Publicizer -->
+	<ItemGroup>
+		<PackageReference Include="Krafs.Publicizer" Version="2.2.1" />
+		<Publicize Include="Assembly-CSharp" IncludeCompilerGeneratedMembers="false" />
+	</ItemGroup>
+
 	<!-- Railroader -->
 	<ItemGroup>
 		<Reference Include="Assembly-CSharp" />
-		<Reference Include="Unity.RenderPipelines.Universal.Runtime">
-		  <HintPath>E:\SteamLibrary\steamapps\common\Railroader\Railroader_Data\Managed\Unity.RenderPipelines.Universal.Runtime.dll</HintPath>
-		</Reference>
+		<Reference Include="Definition" />
+		<Reference Include="Ops" />
+		<Reference Include="Unity.RenderPipelines.Universal.Runtime" />
 	</ItemGroup>
 
 	<!-- Unity -->
 	<ItemGroup>
 		<Reference Include="UnityEngine" />
 		<Reference Include="UnityEngine.CoreModule" />
-		<Reference Include="UnityEngine.IMGUIModule">
-		  <HintPath>E:\SteamLibrary\steamapps\common\Railroader\Railroader_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.InputModule">
-		  <HintPath>E:\SteamLibrary\steamapps\common\Railroader\Railroader_Data\Managed\UnityEngine.InputModule.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.PhysicsModule">
-		  <HintPath>E:\SteamLibrary\steamapps\common\Railroader\Railroader_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
-		</Reference>
+		<Reference Include="UnityEngine.IMGUIModule" />
+		<Reference Include="UnityEngine.InputModule" />
+		<Reference Include="UnityEngine.PhysicsModule" />
+		<Reference Include="UnityEngine.TextRenderingModule" />
 	</ItemGroup>
 
 	<!-- Mod Loader -->
 	<ItemGroup>
+		<PackageReference Include="Krafs.Publicizer" Version="2.2.1">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="UnityModManager" Version="0.27.5" PrivateAssets="all" />
 	</ItemGroup>
 
