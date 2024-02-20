@@ -27,9 +27,9 @@
 		<Reference Include="UnityEngine" />
 		<Reference Include="UnityEngine.CoreModule" />
 		<Reference Include="UnityEngine.IMGUIModule" />
-		<Reference Include="UnityEngine.InputModule" />
 		<Reference Include="UnityEngine.PhysicsModule" />
 		<Reference Include="UnityEngine.TextRenderingModule" />
+		<Reference Include="Unity.InputSystem" />
 		<Reference Include="Unity.RenderPipelines.Universal.Runtime" />
 	</ItemGroup>
 

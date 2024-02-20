@@ -49,6 +49,9 @@ public static class Loader
 				UnityEngine.Object.DontDestroyOnLoad(go);
 				Instance.Settings = Settings;
 				HarmonyInstance.PatchAll(Assembly.GetExecutingAssembly());
+
+				InputSystemBlocker.CreateInputSystemBlocker();
+
 			}
 			catch (Exception ex)
 			{
@@ -69,6 +72,8 @@ public static class Loader
 
 	private static bool Unload(UnityModManager.ModEntry modEntry)
 	{
+		if (InputSystemBlocker.Instance != null)
+			UnityEngine.Object.DestroyImmediate(InputSystemBlocker.Instance);
 		return true;
 	}
 
