@@ -32,6 +32,11 @@ public class InputSystemBlocker : MonoBehaviour
 
 	void OnDestroy()
 	{
+		foreach (var device in deactivedDevices)
+		{
+			InputSystem.EnableDevice(device);
+		}
+		imguiControlActive = false;
 		Instance = null;
 	}
 
