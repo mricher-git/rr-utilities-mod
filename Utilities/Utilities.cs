@@ -4,8 +4,10 @@ using Game;
 using Game.Events;
 using Game.Messages;
 using Game.State;
+using GPUInstancer;
 using HarmonyLib;
 using Helpers;
+using Map.Runtime;
 using Model;
 using Model.Definition;
 using Model.Definition.Data;
@@ -98,8 +100,8 @@ public class UtilitiesMod : MonoBehaviour
 	{
 		if (MapState == MapStates.MAPLOADED) return;
 		MapState = MapStates.MAPLOADED;
-
-		OnSettingsChanged();
+		OnDistanceSettingsChanged();
+		OnGraphicsSettingsChanged();
 	}
 
 	private void OnMapWillUnload(MapWillUnloadEvent evt)
@@ -107,23 +109,39 @@ public class UtilitiesMod : MonoBehaviour
 		MapState = MapStates.MAPUNLOADING;
 	}
 
-	public void OnSettingsChanged()
+	public void OnGraphicsSettingsChanged()
 	{
+		if (MapState != MapStates.MAPLOADED) return;
+
+		var pipelineAsset = QualitySettings.renderPipeline as UniversalRenderPipelineAsset;
+		if (pipelineAsset != null)
+		{
+			pipelineAsset.msaaSampleCount = (int)Settings.graphicsSettings.MSAA;
+			pipelineAsset.renderScale = Settings.graphicsSettings.SSAA;
+		}
+
 		var cam = Camera.main.GetUniversalAdditionalCameraData();
 		if (cam != null)
 		{
-			cam.antialiasing = Settings.graphicsSettings.AntiAliasing;
-			cam.antialiasingQuality = Settings.graphicsSettings.AntiAliasingQuality;
-			if (Settings.graphicsSettings.AntiAliasing == AntialiasingMode.None)
+
+			cam.antialiasing = Settings.graphicsSettings.PostProcessingAntiAliasing;
+			cam.antialiasingQuality = Settings.graphicsSettings.PostProcessingAntiAliasingQuality;
+		}
+
+		QualitySettings.lodBias = Settings.graphicsSettings.lodBias;
+		GPUInstancerAPI.SetLODBias(MapManager.Instance.sharedTreeManager, Settings.graphicsSettings.lodBiasTree);
+		foreach (MapTerrain mapTerrain in MapManager.Instance._terrains.Values)
+		{
+			if (mapTerrain.detailManager != null)
 			{
-				Camera.main.allowMSAA = false;
-			}
-			else
-			{
-				Camera.main.allowMSAA = true;
+				GPUInstancerAPI.SetLODBias(mapTerrain.detailManager, Settings.graphicsSettings.lodBiasDetail);
 			}
 		}
-		QualitySettings.lodBias = Settings.graphicsSettings.lodBias;
+	}
+
+	public void OnDistanceSettingsChanged()
+	{
+		if (MapState != MapStates.MAPLOADED) return;
 
 		foreach (var obj in Resources.FindObjectsOfTypeAll<SwitchStand>())
 		{

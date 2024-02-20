@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using dnlib;
 using HarmonyLib;
-using Helpers;
-using Model.AI;
-using Track;
+using System;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityModManagerNet;
@@ -77,29 +72,77 @@ public static class Loader
 		return true;
 	}
 
+	private static bool showGraphics = true;
+	private static bool showDistance = true;
+	private static float orig_SSAA;
 	private static void OnGUI(UnityModManager.ModEntry modEntry)
 	{
-		Settings.Draw(ModEntry);
+		using (new GUILayout.VerticalScope())
+		{
+			orig_SSAA = Settings.graphicsSettings.SSAA;
+			var showGraphics = Settings.showGraphics;
+			var showDistance = Settings.showDistance;
+			using (new GUILayout.HorizontalScope())
+			{
+				GUILayout.Label("Graphics Settings", GUILayout.ExpandWidth(false));
+				if (GUILayout.Button(Settings.showGraphics ? "Hide" : "Show", GUILayout.ExpandWidth(false)))
+				{
+					Settings.showGraphics = !Settings.showGraphics;
+				}
+			}
+			if (showGraphics)
+			{
+				using (new GUILayout.VerticalScope("box"))
+				{
+					UnityModManager.UI.DrawFields(ref Settings.graphicsSettings, modEntry, DrawFieldMask.OnlyDrawAttr, Settings.OnGraphicsSettingsChanged);
+				}
+			}
+			using (new GUILayout.HorizontalScope())
+			{
+				GUILayout.Label("Distance Interaction Settings", GUILayout.ExpandWidth(false));
+				if (GUILayout.Button(Settings.showDistance ? "Hide" : "Show", GUILayout.ExpandWidth(false)))
+				{
+					Settings.showDistance = !Settings.showDistance;
+				}
+			}
+			if (showDistance)
+				using (new GUILayout.VerticalScope("box"))
+				{
+					UnityModManager.UI.DrawFields(ref Settings.distanceSettings, modEntry, DrawFieldMask.OnlyDrawAttr, Settings.OnDistanceChange);
+				}
+		}
+		//Settings.Draw(ModEntry);
 	}
 
-	public class UtilitiesModSettings : UnityModManager.ModSettings, IDrawable
+	public class UtilitiesModSettings : UnityModManager.ModSettings//, IDrawable
 	{
 		public bool DisableDamage;
 		public bool UnlimitedResources;
 		public bool DisableDerailment;
 		public bool FreePurchases;
+		public bool showGraphics = true;
+		public bool showDistance = true;
 
-		[Draw("Graphics", Box = true)]
+		[Draw("Graphics Settings", Box = true, Collapsible = true)]
 		public GraphicsSettings graphicsSettings = new GraphicsSettings();
 
 		public class GraphicsSettings
 		{
-			[Draw("Anti-aliasing Mode")]
-			public AntialiasingMode AntiAliasing = AntialiasingMode.FastApproximateAntialiasing;
-			[Draw("Anti-aliasing Quality")]
-			public AntialiasingQuality AntiAliasingQuality = AntialiasingQuality.High;
-			[Draw("LOD Bias", Type = DrawType.Slider, Min = 1f, Max = 7f, Precision = 0)]
+			[Draw("Super-Sampling Anti-Aliasing (SSAA)",Type = DrawType.Slider, Min = 1, Max = 2)]
+			public float SSAA = 1f;
+			[Header("<size=12><i>* suggest disabling other AA before changing SMAA</i></size>")]
+			[Draw("Multi-Sampling Anti-Aliasing (MSAA)")]
+			public MsaaQuality MSAA = (MsaaQuality)((QualitySettings.renderPipeline as UniversalRenderPipelineAsset)?.msaaSampleCount ?? 2);
+			[Draw("Post Processing Anti-aliasing Mode (FXAA/SMAA")]
+			public AntialiasingMode PostProcessingAntiAliasing = AntialiasingMode.FastApproximateAntialiasing;
+			[Draw("Post Processing Anti-aliasing Quality")]
+			public AntialiasingQuality PostProcessingAntiAliasingQuality = AntialiasingQuality.High;
+			[Draw("LOD Bias", Type = DrawType.Slider, Min = 1f, Max = 10f, Precision = 0)]
 			public float lodBias = QualitySettings.lodBias;
+			[Draw("Tree LOD Bias", Type = DrawType.Slider, Min = 1f, Max = 10f, Precision = 0)]
+			public float lodBiasTree = QualitySettings.lodBias;
+			[Draw("Foliage LOD Bias", Type = DrawType.Slider, Min = 1f, Max = 10f, Precision = 0)]
+			public float lodBiasDetail = QualitySettings.lodBias;
 		}
 
 		[Draw("Distance Interaction Settings", Box = true, Collapsible = true)]
@@ -170,10 +213,35 @@ public static class Loader
 			Save(this, modEntry);
 		}
 
+
+		public void OnGraphicsSettingsChanged()
+		{
+			if (orig_SSAA != graphicsSettings.SSAA)
+			{
+				graphicsSettings.SSAA = (float)(Math.Round(graphicsSettings.SSAA * 2, MidpointRounding.AwayFromZero) / 2);
+				if (orig_SSAA == graphicsSettings.SSAA) return;
+			}
+
+			Instance.OnGraphicsSettingsChanged();
+		}
+
+		public void OnDistanceChange()
+		{
+			Instance.OnDistanceSettingsChanged();
+		}
+
+		/*
 		public void OnChange()
 		{
-			Instance.OnSettingsChanged();
+			if (orig_SSAA != graphicsSettings.SSAA)
+			{
+				graphicsSettings.SSAA = (float)(Math.Round(graphicsSettings.SSAA * 2, MidpointRounding.AwayFromZero) / 2);
+				if (orig_SSAA == graphicsSettings.SSAA) return;
+			}
+
+			Instance.OnDistanceSettingsChanged();
 		}
+		*/
 	}
 
 	public static void Log(string str)

@@ -10,12 +10,15 @@
 	<!-- Krafs Publicizer -->
 	<ItemGroup>
 		<Publicize Include="Assembly-CSharp" IncludeCompilerGeneratedMembers="false" />
+		<Publicize Include="Map.Runtime" IncludeCompilerGeneratedMembers="false" />
 	</ItemGroup>
 
 	<!-- Railroader -->
 	<ItemGroup>
 		<Reference Include="Assembly-CSharp" />
 		<Reference Include="Definition" />
+		<Reference Include="GPUInstancer" />
+		<Reference Include="Map.Runtime" />
 		<Reference Include="Ops" />
 	</ItemGroup>
 
