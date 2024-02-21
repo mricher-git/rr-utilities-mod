@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,7 +8,7 @@ namespace Utilities;
 public class InputSystemBlocker : MonoBehaviour
 {
 	private bool imguiControlActive = false;
-	private InputDevice[] deactivedDevices;
+	private InputDevice[] deactivedDevices = Array.Empty<InputDevice>();
 
 	void Update()
 	{

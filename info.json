@@ -2,7 +2,7 @@
 	"Id": "Utilities",
 	"DisplayName": "RR Utilites",
 	"Author": "Vanguard",
-	"Version": "1.1.0",
+	"Version": "1.1.1",
 	"AssemblyName": "Utilities.dll",
 	"EntryMethod": "Utilities.UMM.Loader.Load",
 	"ManagerVersion": "0.27.8",
