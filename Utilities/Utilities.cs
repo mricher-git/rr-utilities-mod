@@ -210,11 +210,15 @@ public class UtilitiesMod : MonoBehaviour
 		}
 
 		selectedCar = TrainController.Shared.SelectedCar;
-		if (GUI.Button(buttonRect, "U", new GUIStyle(GUI.skin.button) { fontSize = 10, clipping = TextClipping.Overflow })) showGui = !showGui;
+		buttonRect = new Rect(0, UnityModManager.UI.Scale(30), UnityModManager.UI.Scale(20), UnityModManager.UI.Scale(20));
+		if (GUI.Button(buttonRect, "U", new GUIStyle(GUI.skin.button) { fontSize = UnityModManager.UI.Scale(10), clipping = TextClipping.Overflow })) showGui = !showGui;
 
 		if (showGui)
 		{
-			windowRect = GUILayout.Window(555, windowRect, Window, "Utilities");
+			windowRect.x = UnityModManager.UI.Scale(20);
+			windowRect.y = UnityModManager.UI.Scale(30);
+
+			windowRect = GUILayout.Window(555, windowRect, Window, "Utilities", GUIStyle.none, GUILayout.Height(Screen.height - windowRect.y), GUILayout.Width(UnityModManager.UI.Scale(270) + GUI.skin.verticalScrollbar.fixedWidth));
 			if (teleportShow)
 			{
 				if (teleportRect.width > 0)
@@ -235,23 +239,34 @@ public class UtilitiesMod : MonoBehaviour
 			}
 		}
 	}
+
 	private Car? selectedCar;
+	public static GUIStyle styleMiddleRight;
+	public static GUIStyle styleMiddleCenter;
+	private bool doOnce;
 	void Window(int windowId)
 	{
+		if (!doOnce)
+		{
+			styleMiddleRight = new GUIStyle(GUI.skin.textField) { alignment = TextAnchor.MiddleRight };
+			styleMiddleCenter = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter };
+			doOnce = true;
+		}
+
 		var stateManager = StateManager.Shared;
 		
 		GUIStyle centeredLabel = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter };
 
-		scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.Width(270 + GUI.skin.verticalScrollbar.fixedWidth), GUILayout.Height(scrollRect.height + GUI.skin.box.margin.vertical), GUILayout.MaxHeight(Screen.height - 130));
+		scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUI.skin.window, GUILayout.ExpandHeight(false));
 		using (new GUILayout.VerticalScope())
 		{
 			using (new GUILayout.VerticalScope("box"))
 			{
-				GUILayout.Label("Money", centeredLabel, GUILayout.ExpandWidth(true));
+				GUILayout.Label("Money", styleMiddleCenter, GUILayout.ExpandWidth(true));
 
 				GUILayout.BeginHorizontal();
 				GUILayout.Label("Money: ");
-				GUILayout.Label(stateManager.GetBalance().ToString("C0"), new GUIStyle(GUI.skin.textField) { alignment = TextAnchor.MiddleRight });
+				GUILayout.Label(stateManager.GetBalance().ToString("C0"), styleMiddleRight);
 				//GUILayout.Button("Set");
 				GUILayout.EndHorizontal();
 
@@ -282,7 +297,7 @@ public class UtilitiesMod : MonoBehaviour
 
 			using (new GUILayout.VerticalScope("box"))
 			{
-				GUILayout.Label("Game Mode", centeredLabel, GUILayout.ExpandWidth(true));
+				GUILayout.Label("Game Mode", styleMiddleCenter, GUILayout.ExpandWidth(true));
 
 				GUILayout.BeginHorizontal();
 				int gameMode = (int)stateManager.GameMode;
@@ -295,7 +310,7 @@ public class UtilitiesMod : MonoBehaviour
 
 			using (new GUILayout.VerticalScope("box"))
 			{
-				GUILayout.Label("Time Controls", centeredLabel, GUILayout.ExpandWidth(true));
+				GUILayout.Label("Time Controls", styleMiddleCenter, GUILayout.ExpandWidth(true));
 
 				GUILayout.Label("Time: " + TimeWeather.TimeOfDayString);
 				if (StateManager.CheckAuthorizedToSendMessage(default(WaitTime)))
@@ -318,7 +333,7 @@ public class UtilitiesMod : MonoBehaviour
 
 			using (new GUILayout.VerticalScope("box"))
 			{
-				GUILayout.Label("Teleport Locations", centeredLabel, GUILayout.ExpandWidth(true));
+				GUILayout.Label("Teleport Locations", styleMiddleCenter, GUILayout.ExpandWidth(true));
 
 				if (GUILayout.Button("Teleport to Dispatch Station"))
 				{
@@ -334,7 +349,7 @@ public class UtilitiesMod : MonoBehaviour
 
 			using (new GUILayout.VerticalScope("box"))
 			{
-				GUILayout.Label("Weather Presets", centeredLabel, GUILayout.ExpandWidth(true));
+				GUILayout.Label("Weather Presets", styleMiddleCenter, GUILayout.ExpandWidth(true));
 
 				GUILayout.BeginHorizontal();
 				int selected = -1;
@@ -350,10 +365,10 @@ public class UtilitiesMod : MonoBehaviour
 
 			if (StateManager.IsSandbox && StateManager.IsHost)
 			{
-				GUILayout.Label("Sandbox shortcuts", centeredLabel, GUILayout.ExpandWidth(true));
+				GUILayout.Label("Sandbox shortcuts", styleMiddleCenter, GUILayout.ExpandWidth(true));
 				using (new GUILayout.VerticalScope("box"))
 				{
-					GUILayout.Label("Train info", centeredLabel, GUILayout.ExpandWidth(true));
+					GUILayout.Label("Train info", styleMiddleCenter, GUILayout.ExpandWidth(true));
 
 					GUILayout.Label("Selected Loco/Car: " + (selectedCar ? CarInspector.TitleForCar(selectedCar) : "None"));
 
@@ -383,7 +398,7 @@ public class UtilitiesMod : MonoBehaviour
 					using (new GUILayout.VerticalScope("box"))
 					{
 
-						GUILayout.Label("Repair", centeredLabel, GUILayout.ExpandWidth(true));
+						GUILayout.Label("Repair", styleMiddleCenter, GUILayout.ExpandWidth(true));
 						if (GUILayout.Button("Repair Car"))
 						{
 							selectedCar.SetCondition(1f);
@@ -399,8 +414,8 @@ public class UtilitiesMod : MonoBehaviour
 
 					using (new GUILayout.VerticalScope("box"))
 					{
-						GUILayout.Label("Fill/Empty", centeredLabel, GUILayout.ExpandWidth(true));
-				
+						GUILayout.Label("Fill/Empty", styleMiddleCenter, GUILayout.ExpandWidth(true));
+
 						GUILayout.BeginHorizontal();
 						if (GUILayout.Button("Fill Car") && TrainController.Shared.SelectedCar)
 						{
@@ -448,7 +463,7 @@ public class UtilitiesMod : MonoBehaviour
 
 					using (new GUILayout.VerticalScope("box"))
 					{
-						GUILayout.Label("Load/Unload", centeredLabel, GUILayout.ExpandWidth(true));
+						GUILayout.Label("Load/Unload", styleMiddleCenter, GUILayout.ExpandWidth(true));
 						GUILayout.BeginHorizontal();
 						GUILayout.Label("Load:", GUILayout.ExpandWidth(false));
 						if (GUILayout.Button((loadIndex == -1 ? "Select Load" : loadNames[loadIndex])))
@@ -462,7 +477,7 @@ public class UtilitiesMod : MonoBehaviour
 						GUILayout.BeginHorizontal();
 						if (GUILayout.Button("Load Car") && TrainController.Shared.SelectedCar && loadIndex >= 0)
 						{
-							new UI.Console.SetLoadCommand().SetLoad(selectedCar, loadNames[loadIndex], new string[] { "/setload", selectedCar.id, loadNames[loadIndex], "100%"});
+							new UI.Console.SetLoadCommand().SetLoad(selectedCar, loadNames[loadIndex], new string[] { "/setload", selectedCar.id, loadNames[loadIndex], "100%" });
 						}
 						if (GUILayout.Button("Empty Car") && TrainController.Shared.SelectedCar)
 						{
@@ -500,7 +515,6 @@ public class UtilitiesMod : MonoBehaviour
 		if (Event.current.type == EventType.Repaint)
 		{
 			scrollRect = GUILayoutUtility.GetLastRect();
-			windowRect.height = scrollRect.height + 38f;
 		}
 
 		GUILayout.EndScrollView();
