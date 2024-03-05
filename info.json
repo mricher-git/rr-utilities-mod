@@ -2,10 +2,10 @@
 	"Id": "Utilities",
 	"DisplayName": "RR Utilites",
 	"Author": "Vanguard",
-	"Version": "1.1.1",
+	"Version": "1.2.0",
 	"AssemblyName": "Utilities.dll",
 	"EntryMethod": "Utilities.UMM.Loader.Load",
 	"ManagerVersion": "0.27.8",
 	"HomePage": "https://www.nexusmods.com/railroader/mods/19/",
-	"Repository": "https://raw.githubusercontent.com/mricher-git/rr-utilities-mod/master/Repository.json"
+	"Repository": "https://raw.githubusercontent.com/mricher-git/rr-utilities-mod/master/repository.json"
 }

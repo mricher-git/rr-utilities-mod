@@ -2,8 +2,13 @@
 	"Releases": [
 		{
 			"Id": "Utilities",
+			"Version": "1.2.0",
+			"DownloadUrl": "https://github.com/mricher-git/rr-utilities-mod/releases/download/v1.2.0/Utilities.zip"
+		},
+		{
+			"Id": "Utilities",
 			"Version": "1.1.1",
-			"DownloadUrl": "https://github.com/mricher-git/rr-utilities-mod/releases/download/v1.1.0/Utilities.zip"
+			"DownloadUrl": "https://github.com/mricher-git/rr-utilities-mod/releases/download/v1.1.1/Utilities.zip"
 		},
 		{
 			"Id": "Utilities",
