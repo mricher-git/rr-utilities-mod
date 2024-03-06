@@ -174,11 +174,13 @@ public static class Loader
 			[Draw("Click Radius (Default: 0.21)", Type = DrawType.Slider, Min = 0.21f, Max = 0.5f)]
 			public float CouplerRadius = 0.21f;
 
-			[Header("Gladhands")]
+			[Header("Gladhands / Hose")]
 			[Draw("Click Distance (Default 30)", Type = DrawType.Slider, Min = 30f, Max = 150f, Precision = 0)]
 			public float GladhandsDistance = 30f;
 			[Draw("Click Radius (Default: 0.06)", Type = DrawType.Slider, Min = 0.06f, Max = 0.3f)]
 			public float GladhandsRadius = 0.12f;
+			[Draw("Hose Render Distance (Default: 25)", Type = DrawType.Slider, Min = 25f, Max = 75f, Precision = 0)]
+			public float HoseRenderDistance = 25f;
 
 			[Header("Station Info")]
 			[Draw("Click Distance (Default 50)", Type = DrawType.Slider, Min = 50f, Max = 500f, Precision = 0)]

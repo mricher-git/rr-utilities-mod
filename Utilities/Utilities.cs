@@ -199,6 +199,9 @@ public class UtilitiesMod : MonoBehaviour
 				collider.height = 3f + (Settings.distanceSettings.DieselRadius - 0.1f) * 2f;
 			}
 		}
+
+		CullingManager.HoseDistanceBands[0] = Settings.distanceSettings.HoseRenderDistance;
+		CullingManager.Hose._cullingGroup.SetBoundingDistances(CullingManager.HoseDistanceBands);
 	}
 
 	void OnGUI()
