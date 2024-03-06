@@ -34,7 +34,7 @@ public static class Loader
 		ModEntry.OnSaveGUI = Settings.Save;
 
 		HarmonyInstance = new Harmony(modEntry.Info.Id);
-		//Harmony.DEBUG = true;
+		Harmony.DEBUG = true;
 		return true;
 	}
 

@@ -18,10 +18,14 @@ using RollingStock.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using Track;
 using UI.CarInspector;
 using UI.Console.Commands;
+using UI.PreferencesWindow;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityModManagerNet;
 using Utilities.UMM;
@@ -67,6 +71,7 @@ public class UtilitiesMod : MonoBehaviour
 
 
 	internal Loader.UtilitiesModSettings Settings;
+	internal static RenderPipelineAsset originalPipelineAsset;
 
 	public static UtilitiesMod Instance
 	{
@@ -88,6 +93,13 @@ public class UtilitiesMod : MonoBehaviour
 	{
 		Messenger.Default.Unregister<MapDidLoadEvent>(this);
 		Messenger.Default.Unregister<MapWillUnloadEvent>(this);
+
+		if (originalPipelineAsset != null)
+		{
+			Destroy(QualitySettings.renderPipeline);
+			QualitySettings.renderPipeline = originalPipelineAsset;
+			originalPipelineAsset = null;
+		}
 
 		if (MapState == MapStates.MAPLOADED)
 		{
@@ -113,11 +125,20 @@ public class UtilitiesMod : MonoBehaviour
 	{
 		if (MapState != MapStates.MAPLOADED) return;
 
+		if (originalPipelineAsset == null)
+		{
+			originalPipelineAsset = QualitySettings.renderPipeline;
+			QualitySettings.renderPipeline = UnityEngine.Object.Instantiate(QualitySettings.renderPipeline);
+		}
+
 		var pipelineAsset = QualitySettings.renderPipeline as UniversalRenderPipelineAsset;
+
 		if (pipelineAsset != null)
 		{
 			pipelineAsset.msaaSampleCount = (int)Settings.graphicsSettings.MSAA;
 			pipelineAsset.renderScale = Settings.graphicsSettings.SSAA;
+			var universalRenderer = pipelineAsset.GetRenderer(0) as UniversalRenderer;
+			//universalRenderer!.depthPrimingMode = Settings.graphicsSettings.DepthPrimingMode;
 		}
 
 		var cam = Camera.main.GetUniversalAdditionalCameraData();
@@ -672,6 +693,39 @@ public static class QueryToolDistancePatch
 
 		__result = TooltipInfo.Empty;
 		return false;
+	}
+}
+
+[HarmonyPatch]
+public static class SetQualityLevelPatch
+{
+	static MethodBase TargetMethod()
+	{
+		var methodInfo = typeof(PreferencesBuilder).GetMethod(nameof(PreferencesBuilder.BuildTabGraphics), BindingFlags.NonPublic | BindingFlags.Static);
+		var codes = PatchProcessor.ReadMethodBody(methodInfo);
+		var instructions = codes.Select(pair => new CodeInstruction(pair.Key, pair.Value));
+		var codeMatcher = new CodeMatcher(instructions)
+			.MatchStartForward(new CodeMatch(OpCodes.Ldstr, "Quality"))
+			.ThrowIfNotMatch("Could not find PreferencesBuilder Quality string")
+			.MatchStartForward(new CodeMatch(OpCodes.Ldftn))
+			.ThrowIfNotMatch("Could not find PreferencesBuilder AddDropdownIntPicker delegate")
+			.Advance(1)
+			.MatchStartForward(new CodeMatch(OpCodes.Ldftn))
+			.ThrowIfNotMatch("Could not find PreferencesBuilder SetQualityLevel delegate");
+		return (codeMatcher.Operand as MethodInfo)!;
+	}
+
+	public static bool Prefix(int value)
+	{
+		if (UtilitiesMod.originalPipelineAsset != null)
+			QualitySettings.renderPipeline = UtilitiesMod.originalPipelineAsset;
+		QualitySettings.SetQualityLevel(value);
+		UtilitiesMod.originalPipelineAsset = QualitySettings.renderPipeline;
+		QualitySettings.renderPipeline = UnityEngine.Object.Instantiate(QualitySettings.renderPipeline);
+
+		UtilitiesMod.Instance?.OnGraphicsSettingsChanged();
+		return false;
+		
 	}
 }
 
