@@ -133,21 +133,27 @@ public static class Loader
 
 		public class GraphicsSettings
 		{
-			[Draw("Super-Sampling Anti-Aliasing (SSAA)",Type = DrawType.Slider, Min = 1, Max = 2)]
+			[Header("Anti-aliasing")]
+			[Draw("Super-Sampling Anti-Aliasing (SSAA) <i><b>high impact</b></i>",Type = DrawType.Slider, Min = 1, Max = 2)]
 			public float SSAA = 1f;
-			[Header("<size=12><i>* suggest disabling other AA before changing SMAA</i></size>")]
 			[Draw("Multi-Sampling Anti-Aliasing (MSAA)")]
 			public MsaaQuality MSAA = (MsaaQuality)((QualitySettings.renderPipeline as UniversalRenderPipelineAsset)?.msaaSampleCount ?? 2);
 			[Draw("Post Processing Anti-aliasing Mode (FXAA/SMAA")]
 			public AntialiasingMode PostProcessingAntiAliasing = AntialiasingMode.FastApproximateAntialiasing;
 			[Draw("Post Processing Anti-aliasing Quality")]
 			public AntialiasingQuality PostProcessingAntiAliasingQuality = AntialiasingQuality.High;
+
+			[Header("LOD")]
 			[Draw("LOD Bias", Type = DrawType.Slider, Min = 1f, Max = 10f, Precision = 0)]
 			public float lodBias = QualitySettings.lodBias;
 			[Draw("Tree LOD Bias", Type = DrawType.Slider, Min = 1f, Max = 10f, Precision = 0)]
 			public float lodBiasTree = QualitySettings.lodBias;
 			[Draw("Foliage LOD Bias", Type = DrawType.Slider, Min = 1f, Max = 10f, Precision = 0)]
 			public float lodBiasDetail = QualitySettings.lodBias;
+
+			[Header("Advanced Settings")]
+			[Draw("Depth Priming Mode")]
+			public DepthPrimingMode DepthPrimingMode;
 		}
 
 		[Draw("Distance Interaction Settings", Box = true, Collapsible = true)]

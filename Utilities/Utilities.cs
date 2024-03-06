@@ -126,6 +126,8 @@ public class UtilitiesMod : MonoBehaviour
 
 			cam.antialiasing = Settings.graphicsSettings.PostProcessingAntiAliasing;
 			cam.antialiasingQuality = Settings.graphicsSettings.PostProcessingAntiAliasingQuality;
+			var universalRenderer = cam.scriptableRenderer as UniversalRenderer;
+			if (universalRenderer != null) universalRenderer.depthPrimingMode = Settings.graphicsSettings.DepthPrimingMode;
 		}
 
 		QualitySettings.lodBias = Settings.graphicsSettings.lodBias;
