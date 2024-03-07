@@ -250,7 +250,7 @@ public class UtilitiesMod : MonoBehaviour
 				if (teleportRect.width > 0)
 				{
 					teleportRect.x = windowRect.x + windowRect.width;
-					teleportRect.y = windowRect.y + windowRect.height - teleportRect.height;
+					teleportRect.y = windowRect.y;
 				}
 				teleportRect = GUILayout.Window(556, teleportRect, TeleportWindow, "Select Teleport Location");
 			}
@@ -259,7 +259,7 @@ public class UtilitiesMod : MonoBehaviour
 				if (loadRect.width > 0)
 				{
 					loadRect.x = windowRect.x + windowRect.width;
-					loadRect.y = windowRect.y + windowRect.height - loadRect.height;
+					loadRect.y = windowRect.y + scrollRect.height - loadRect.height;
 				}
 				loadRect = GUILayout.Window(557, loadRect, LoadWindow, "Select Load Type");
 			}
@@ -537,13 +537,12 @@ public class UtilitiesMod : MonoBehaviour
 				}
 			}
 		}
+		GUILayout.EndScrollView();
 
 		if (Event.current.type == EventType.Repaint)
 		{
 			scrollRect = GUILayoutUtility.GetLastRect();
 		}
-
-		GUILayout.EndScrollView();
 	}
 
 	private void TeleportWindow(int windowId)
