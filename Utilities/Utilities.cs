@@ -288,41 +288,6 @@ public class UtilitiesMod : MonoBehaviour
 		{
 			using (new GUILayout.VerticalScope("box"))
 			{
-				GUILayout.Label("Money", styleMiddleCenter, GUILayout.ExpandWidth(true));
-
-				GUILayout.BeginHorizontal();
-				GUILayout.Label("Money: ");
-				GUILayout.Label(stateManager.GetBalance().ToString("C0"), styleMiddleRight);
-				//GUILayout.Button("Set");
-				GUILayout.EndHorizontal();
-
-				if (StateManager.IsHost)
-				{
-					GUILayout.BeginHorizontal();
-					if (GUILayout.Button("> $1k"))
-						AddMoney(1000);
-					if (GUILayout.Button("> $10k"))
-						AddMoney(10000);
-					if (GUILayout.Button("> $100k"))
-						AddMoney(100000);
-					if (GUILayout.Button("> $1M"))
-						AddMoney(1000000);
-					GUILayout.EndHorizontal();
-					GUILayout.BeginHorizontal();
-					if (GUILayout.Button("< $1k"))
-						AddMoney(-1000);
-					if (GUILayout.Button("< $10k"))
-						AddMoney(-10000);
-					if (GUILayout.Button("< $100k"))
-						AddMoney(-100000);
-					if (GUILayout.Button("< $1M"))
-						AddMoney(-1000000);
-					GUILayout.EndHorizontal();
-				}
-			}
-
-			using (new GUILayout.VerticalScope("box"))
-			{
 				GUILayout.Label("Game Mode", styleMiddleCenter, GUILayout.ExpandWidth(true));
 
 				GUILayout.BeginHorizontal();
@@ -392,6 +357,41 @@ public class UtilitiesMod : MonoBehaviour
 			if (StateManager.IsSandbox && StateManager.IsHost)
 			{
 				GUILayout.Label("Sandbox shortcuts", styleMiddleCenter, GUILayout.ExpandWidth(true));
+				using (new GUILayout.VerticalScope("box"))
+				{
+					GUILayout.Label("Money", styleMiddleCenter, GUILayout.ExpandWidth(true));
+
+					GUILayout.BeginHorizontal();
+					GUILayout.Label("Money: ");
+					GUILayout.Label(stateManager.GetBalance().ToString("C0"), styleMiddleRight);
+					//GUILayout.Button("Set");
+					GUILayout.EndHorizontal();
+
+					if (StateManager.IsHost)
+					{
+						GUILayout.BeginHorizontal();
+						if (GUILayout.Button("> $1k"))
+							AddMoney(1000);
+						if (GUILayout.Button("> $10k"))
+							AddMoney(10000);
+						if (GUILayout.Button("> $100k"))
+							AddMoney(100000);
+						if (GUILayout.Button("> $1M"))
+							AddMoney(1000000);
+						GUILayout.EndHorizontal();
+						GUILayout.BeginHorizontal();
+						if (GUILayout.Button("< $1k"))
+							AddMoney(-1000);
+						if (GUILayout.Button("< $10k"))
+							AddMoney(-10000);
+						if (GUILayout.Button("< $100k"))
+							AddMoney(-100000);
+						if (GUILayout.Button("< $1M"))
+							AddMoney(-1000000);
+						GUILayout.EndHorizontal();
+					}
+				}
+
 				using (new GUILayout.VerticalScope("box"))
 				{
 					GUILayout.Label("Train info", styleMiddleCenter, GUILayout.ExpandWidth(true));
