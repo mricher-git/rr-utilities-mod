@@ -211,7 +211,7 @@ public class UtilitiesMod : MonoBehaviour
 				collider.radius = Settings.distanceSettings.CoalRadius;
 				collider.height = 4.13f + (Settings.distanceSettings.CoalRadius - 0.3f) * 2f;
 			}
-			else if (obj.displayTitle == "Water Spout")
+			else if (obj.displayTitle == "Water Spout" || obj.displayTitle == "Water Column")
 			{
 				collider.radius = Settings.distanceSettings.WaterRadius;
 				collider.height = 4.13f + (Settings.distanceSettings.WaterRadius - 0.3f) * 2f;
@@ -649,7 +649,7 @@ public static class CoalWaterDieselMaxDistancePatch
 			__result = Loader.Settings.distanceSettings.CoalDistance;
 			return false;
 		}
-		else if (__instance.displayTitle == "Water Spout")
+		else if (__instance.displayTitle == "Water Spout" || __instance.displayTitle == "Water Column")
 		{
 			__result = Loader.Settings.distanceSettings.WaterDistance;
 			return false;
