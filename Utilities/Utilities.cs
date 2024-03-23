@@ -4,7 +4,6 @@ using Game;
 using Game.Events;
 using Game.Messages;
 using Game.State;
-using GPUInstancer;
 using HarmonyLib;
 using Helpers;
 using Map.Runtime;
@@ -29,6 +28,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityModManagerNet;
 using Utilities.UMM;
+using VisualDesignCafe.Rendering.Nature;
 
 namespace Utilities;
 
@@ -152,14 +152,8 @@ public class UtilitiesMod : MonoBehaviour
 		}
 
 		QualitySettings.lodBias = Settings.graphicsSettings.lodBias;
-		GPUInstancerAPI.SetLODBias(MapManager.Instance.sharedTreeManager, Settings.graphicsSettings.lodBiasTree);
-		foreach (MapTerrain mapTerrain in MapManager.Instance._terrains.Values)
-		{
-			if (mapTerrain.detailManager != null)
-			{
-				GPUInstancerAPI.SetLODBias(mapTerrain.detailManager, Settings.graphicsSettings.lodBiasDetail);
-			}
-		}
+		var natureRendererCameraSettings = Camera.main.GetComponent<NatureRendererCameraSettings>();
+		natureRendererCameraSettings.LodBias = Settings.graphicsSettings.lodBiasFoliage;
 	}
 
 	public void OnDistanceSettingsChanged()
