@@ -217,6 +217,10 @@ public static class Loader
 			[Header("Query Tool")]
 			[Draw("Distance (Default 100)", Type = DrawType.Slider, Min = 100, Max = 1500f, Precision = 0)]
 			public float QueryDistance = 1500f;
+
+			[Header("Roundhouse Stall Doors")]
+			[Draw("Distance (Default 10)", Type = DrawType.Slider, Min = 10, Max = 500f, Precision = 0)]
+			public float StallDoorsDistance = 250f;
 		}
 
 		public override void Save(UnityModManager.ModEntry modEntry)

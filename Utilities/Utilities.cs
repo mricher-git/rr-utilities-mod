@@ -153,7 +153,7 @@ public class UtilitiesMod : MonoBehaviour
 
 		QualitySettings.lodBias = Settings.graphicsSettings.lodBias;
 		var natureRendererCameraSettings = Camera.main.GetComponent<NatureRendererCameraSettings>();
-		natureRendererCameraSettings.LodBias = Settings.graphicsSettings.lodBiasFoliage;
+		natureRendererCameraSettings.LodBias = Settings.graphicsSettings.lodBiasFoliage / Settings.graphicsSettings.lodBias;
 	}
 
 	public void OnDistanceSettingsChanged()
@@ -634,7 +634,7 @@ public static class IndustryMaxDistancePatch
 }
 
 [HarmonyPatch("KeyValuePickableToggle", "MaxPickDistance", MethodType.Getter)]
-public static class CoalWaterDieselMaxDistancePatch
+public static class KeyValuePickableMaxDistancePatch
 {
 	public static bool Prefix(ref float __result, KeyValuePickableToggle __instance)
 	{
@@ -653,7 +653,11 @@ public static class CoalWaterDieselMaxDistancePatch
 			__result = Loader.Settings.distanceSettings.DieselDistance;
 			return false;
 		}
-		
+		else if (__instance.displayTitle == "Stall Doors")
+		{
+			__result = Loader.Settings.distanceSettings.StallDoorsDistance;
+			return false;
+		}
 
 		return true;
 	}
