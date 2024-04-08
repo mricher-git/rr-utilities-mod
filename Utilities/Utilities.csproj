@@ -26,11 +26,14 @@
 	<ItemGroup>
 		<Reference Include="UnityEngine" />
 		<Reference Include="UnityEngine.CoreModule" />
+		<Reference Include="UnityEngine.ImageConversionModule" />
 		<Reference Include="UnityEngine.IMGUIModule" />
 		<Reference Include="UnityEngine.PhysicsModule" />
 		<Reference Include="UnityEngine.TextRenderingModule" />
+		<Reference Include="UnityEngine.UI" />
 		<Reference Include="Unity.InputSystem" />
 		<Reference Include="Unity.RenderPipelines.Universal.Runtime" />
+		<Reference Include="Unity.TextMeshPro" />
 	</ItemGroup>
 
 	<!-- Mod Loader -->
@@ -48,6 +51,7 @@
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<!-- Copy to build folder -->
 		<Copy SourceFiles="$(TargetPath)" DestinationFolder="../build/" />
+		<Copy SourceFiles="$(ProjectDir)\icon.png" DestinationFolder="../build/" />
 
 		<!-- Package after Release build -->
 		<Exec Condition="'$(ConfigurationName)' == 'Release' And '$(OS)' == 'Windows_NT'" Command="powershell -executionpolicy bypass -Command &quot;(../package.ps1)&quot;" />

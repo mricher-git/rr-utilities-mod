@@ -148,10 +148,6 @@ public static class Loader
 			public float lodBias = QualitySettings.lodBias;
 			[Draw("Foliage LOD Bias", Type = DrawType.Slider, Min = 1f, Max = 10f, Precision = 0)]
 			public float lodBiasFoliage = QualitySettings.lodBias;
-
-			[Header("Advanced Settings")]
-			[Draw("Depth Priming Mode")]
-			public DepthPrimingMode DepthPrimingMode;
 		}
 
 		[Draw("Distance Interaction Settings", Box = true, Collapsible = true)]

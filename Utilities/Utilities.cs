@@ -6,7 +6,6 @@ using Game.Messages;
 using Game.State;
 using HarmonyLib;
 using Helpers;
-using Map.Runtime;
 using Model;
 using Model.Definition;
 using Model.Definition.Data;
@@ -16,16 +15,21 @@ using RollingStock;
 using RollingStock.Controls;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using Track;
+using UI;
 using UI.CarInspector;
+using UI.Common;
+using UI.CompanyWindow;
 using UI.Console.Commands;
 using UI.PreferencesWindow;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.UI;
 using UnityModManagerNet;
 using Utilities.UMM;
 using VisualDesignCafe.Rendering.Nature;
@@ -44,6 +48,8 @@ public class UtilitiesMod : MonoBehaviour
 	private Rect windowRect = new Rect(20, 30, 0, 0);
 	private Vector2 scrollPosition;
 	private Rect scrollRect;
+
+	private GameObject topRightIcon;
 
 	private Rect teleportRect;
 	private int teleportLocation = -1;
@@ -68,7 +74,6 @@ public class UtilitiesMod : MonoBehaviour
 			return _loadNames ?? CarPrototypeLibrary.instance.opsLoads.Select(load => load.id).ToArray();
 		}
 	}
-
 
 	internal Loader.UtilitiesModSettings Settings;
 	internal static RenderPipelineAsset originalPipelineAsset;
@@ -114,11 +119,16 @@ public class UtilitiesMod : MonoBehaviour
 		MapState = MapStates.MAPLOADED;
 		OnDistanceSettingsChanged();
 		OnGraphicsSettingsChanged();
+
+		AddTopRightIcon();
 	}
 
 	private void OnMapWillUnload(MapWillUnloadEvent evt)
 	{
 		MapState = MapStates.MAPUNLOADING;
+
+		if (topRightIcon != null) DestroyImmediate(topRightIcon);
+		if (UtilitiesWindow.Shared != null) DestroyImmediate(UtilitiesWindow.Shared.gameObject);
 	}
 
 	public void OnGraphicsSettingsChanged()
@@ -138,7 +148,6 @@ public class UtilitiesMod : MonoBehaviour
 			pipelineAsset.msaaSampleCount = (int)Settings.graphicsSettings.MSAA;
 			pipelineAsset.renderScale = Settings.graphicsSettings.SSAA;
 			var universalRenderer = pipelineAsset.GetRenderer(0) as UniversalRenderer;
-			//universalRenderer!.depthPrimingMode = Settings.graphicsSettings.DepthPrimingMode;
 		}
 
 		var cam = Camera.main.GetUniversalAdditionalCameraData();
@@ -147,8 +156,7 @@ public class UtilitiesMod : MonoBehaviour
 
 			cam.antialiasing = Settings.graphicsSettings.PostProcessingAntiAliasing;
 			cam.antialiasingQuality = Settings.graphicsSettings.PostProcessingAntiAliasingQuality;
-			var universalRenderer = cam.scriptableRenderer as UniversalRenderer;
-			if (universalRenderer != null) universalRenderer.depthPrimingMode = Settings.graphicsSettings.DepthPrimingMode;
+			//var universalRenderer = cam.scriptableRenderer as UniversalRenderer;
 		}
 
 		QualitySettings.lodBias = Settings.graphicsSettings.lodBias;
@@ -219,6 +227,38 @@ public class UtilitiesMod : MonoBehaviour
 
 		CullingManager.HoseDistanceBands[0] = Settings.distanceSettings.HoseRenderDistance;
 		CullingManager.Hose._cullingGroup.SetBoundingDistances(CullingManager.HoseDistanceBands);
+	}
+
+	public static Sprite? LoadTexture(string fileName, string name)
+	{
+		string iconPath = Path.Combine(Loader.ModEntry.Path, fileName);
+		var tex = new Texture2D(128, 128, TextureFormat.DXT5, false);
+		tex.name = name;
+		tex.wrapMode = TextureWrapMode.Clamp;
+		if (!ImageConversion.LoadImage(tex, File.ReadAllBytes(iconPath)))
+		{
+			Loader.Log("Unable to load icon!");
+			return null;
+		}
+		Sprite sprite = Sprite.Create(tex, new Rect(0f, 0f, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+		sprite.name = name;
+		return sprite;
+	}
+
+	private void AddTopRightIcon()
+	{
+		FindObjectOfType<ProgrammaticWindowCreator>().CreateWindow<UtilitiesWindow>(270, (int)(Screen.height * .66f), UI.Common.Window.Position.UpperRight);
+
+		var topRightArea = FindObjectOfType<TopRightArea>(true);
+		topRightIcon = new GameObject("Utilities Button", typeof(RectTransform), typeof(Button), typeof(Image));
+		topRightIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(32f, 32f);
+		var button = topRightIcon.GetComponent<Button>();
+		button.image = topRightIcon.GetComponent<Image>();
+		button.image.sprite = LoadTexture("icon.png", "ButtonUtilitiesMod");
+		topRightIcon.transform.SetParent(topRightArea.tutorialButton.transform.parent, false);
+		topRightIcon.transform.SetSiblingIndex(1);
+
+		button.onClick.AddListener(() => UtilitiesWindow.Shared.Show());
 	}
 
 	void OnGUI()
